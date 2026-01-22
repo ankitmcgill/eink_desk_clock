@@ -13,9 +13,14 @@
 
 int main(void)
 {
+    // Initialize All Enabled Stdio Backends
+    stdio_init_all();
+
     // Initialize Wifi Chip Architecture
     cyw43_arch_init();
 
+    printf("Starting main ...\n");
+    
     // Toggle LED 3 Times
     for(uint8_t i = 0; i < 3; i++)
     {
