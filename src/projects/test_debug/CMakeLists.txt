@@ -22,7 +22,8 @@ add_executable(test_debug
 target_link_libraries(test_debug pico_stdlib)
 target_link_libraries(test_debug pico_cyw43_arch_none)
 
-# Enable Semihostin Stdio
+# Enable USB Stdio
+# Disable UART Stdio
 pico_enable_stdio_usb(test_debug 1)
 pico_enable_stdio_uart(test_debug 0)
 
@@ -33,3 +34,36 @@ pico_set_program_version(test_debug "0.1")
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(test_debug)
+
+# Add Compile Time Definitions For Program Metadata
+# Compile Date Time
+execute_process(
+    COMMAND
+        bash -c "date"
+    OUTPUT_VARIABLE
+        COMPILE_DATE_TIME
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# Git Branch & Hash
+execute_process(
+    COMMAND
+        bash -c "git rev-parse --abbrev-ref HEAD"
+    OUTPUT_VARIABLE
+        GIT_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+execute_process(
+    COMMAND
+        bash -c "git rev-parse --short HEAD"
+    OUTPUT_VARIABLE
+        GIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+execute_process(
+    COMMAND
+        bash -c "git tag --points-at HEAD"
+    OUTPUT_VARIABLE
+        GIT_TAG
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+add_definitions(-DCOMPILE_DATE_TIME="${COMPILE_DATE_TIME}" -DGIT_BRANCH="${GIT_BRANCH}" -DGIT_HASH="${GIT_HASH}" -DGIT_TAG="${GIT_TAG}")
