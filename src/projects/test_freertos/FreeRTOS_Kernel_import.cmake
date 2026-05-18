@@ -1,0 +1,1 @@
+/Volumes/external_hdd/toolchains/pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2350_ARM_NTZ/FreeRTOS_Kernel_import.cmake

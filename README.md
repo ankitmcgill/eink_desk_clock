@@ -1,1 +1,1 @@
-# pico_2350_led_panel_hub75
+# Rpi 2350 Based E-Ink Clock
