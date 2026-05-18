@@ -11,33 +11,33 @@ include(pico_sdk_import.cmake)
 # Include FreeRTOS
 include(FreeRTOS_Kernel_import.cmake)
 
-project(test_debug C CXX ASM)
+project(test_freertos C CXX ASM)
 
 # Initialize the Raspberry Pi Pico SDK
 # Pull in PICO SDK (must be before project)
 pico_sdk_init()
 
-add_executable(test_debug
+add_executable(test_freertos
     main.c
     )
 
 # pull in common dependencies
-target_link_libraries(test_debug pico_stdlib)
-target_link_libraries(test_debug pico_cyw43_arch_none)
-target_link_libraries(test_debug FreeRTOS-Kernel-Heap4)
+target_link_libraries(test_freertos pico_stdlib)
+target_link_libraries(test_freertos pico_cyw43_arch_none)
+target_link_libraries(test_freertos FreeRTOS-Kernel-Heap4)
 
 # Enable USB Stdio
 # Disable UART Stdio
-pico_enable_stdio_usb(test_debug 1)
-pico_enable_stdio_uart(test_debug 0)
+pico_enable_stdio_usb(test_freertos 1)
+pico_enable_stdio_uart(test_freertos 0)
 
 # Binary Information
-pico_set_program_name(test_debug "Test_debug")
-pico_set_program_description(test_debug "Test_debug test project")
-pico_set_program_version(test_debug "0.1")
+pico_set_program_name(test_freertos "Test_freertos")
+pico_set_program_description(test_freertos "test_freertos test project")
+pico_set_program_version(test_freertos "0.1")
 
 # create map/bin/hex file etc.
-pico_add_extra_outputs(test_debug)
+pico_add_extra_outputs(test_freertos)
 
 # Add Compile Time Definitions For Program Metadata
 # Compile Date Time
