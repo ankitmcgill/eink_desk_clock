@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(PICO_BOARD pico2_w)
 
 # Include Pico SDK Cmake
-include(../pico_sdk_import.cmake)
+include(pico_sdk_import.cmake)
 
 project(test_debug C CXX ASM)
 
