@@ -9,7 +9,7 @@ set(PICO_BOARD pico2_w)
 include(pico_sdk_import.cmake)
 
 # Include FreeRTOS
-include(FreeRTOS_Kernel_import.cmake)
+include(./freertos_config/FreeRTOS_Kernel_import.cmake)
 
 project(test_freertos C CXX ASM)
 
@@ -20,6 +20,11 @@ pico_sdk_init()
 add_executable(test_freertos
     main.c
     )
+
+# Add Project Folders Include Path
+target_include_directories(test_freertos PUBLIC ./)
+target_include_directories(test_freertos PUBLIC ./freertos_config)
+
 
 # pull in common dependencies
 target_link_libraries(test_freertos pico_stdlib)
