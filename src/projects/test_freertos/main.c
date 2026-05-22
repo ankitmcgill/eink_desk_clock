@@ -3,13 +3,15 @@
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
 #include "pico/binary_info.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 // Defines
-#define DELAY_LED_MS    (200)
 
 // Internal Variables
 
 // Internal Functions
+static void s_task_fn(void *pvParameters);
 static void s_print_program_information(void);
 
 int main(void)
@@ -21,17 +23,42 @@ int main(void)
     cyw43_arch_init();
 
     printf("Starting main ...\n");
-    
-    // Toggle LED 3 Times
-    for(uint8_t i = 0; i < 3; i++)
-    {
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, true);
-        sleep_ms(DELAY_LED_MS);
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
-        sleep_ms(DELAY_LED_MS);
-    }
-
     s_print_program_information();
+
+    printf("Starting main task ...\n");
+    
+    /* Create task */
+    xTaskCreate(
+        s_task_fn,        // Task function
+        "DebugTask",      // Task name
+        256,              // Stack size
+        NULL,             // Task parameter
+        1,                // Task priority
+        NULL              // Task handle
+    );
+
+    /* Start scheduler */
+    vTaskStartScheduler();
+
+    /* Infinite Loop */
+    while(true){
+        // Do Nothing
+    }
+}
+
+static void s_task_fn(void *pvParameters)
+{
+    static bool led_state = true;
+
+    led_state = !led_state;
+    while(true)
+    {
+        printf("Task Running ...\n");
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_state);
+
+        /* Delay for 1000 ms */
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
 }
 
 static void s_print_program_information(void)

@@ -25,7 +25,6 @@ add_executable(test_freertos
 target_include_directories(test_freertos PUBLIC ./)
 target_include_directories(test_freertos PUBLIC ./freertos_config)
 
-
 # pull in common dependencies
 target_link_libraries(test_freertos pico_stdlib)
 target_link_libraries(test_freertos pico_cyw43_arch_none)
@@ -33,8 +32,8 @@ target_link_libraries(test_freertos FreeRTOS-Kernel-Heap4)
 
 # Enable USB Stdio
 # Disable UART Stdio
-pico_enable_stdio_usb(test_freertos 1)
-pico_enable_stdio_uart(test_freertos 0)
+pico_enable_stdio_usb(test_freertos 0)
+pico_enable_stdio_uart(test_freertos 1)
 
 # Binary Information
 pico_set_program_name(test_freertos "Test_freertos")
