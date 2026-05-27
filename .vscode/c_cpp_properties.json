@@ -1,19 +1,18 @@
 {
+    "version": 4,
     "configurations": [
-    {
-        "name": "Mac",
-        "includePath": [
-            "${workspaceFolder}/**",
-            "${workspaceFolder}/build/**",
-            "${env:PICO_SDK_PATH}/**"
-        ],
-        "defines": [],
-        // "compilerPath": "${env:ARM_TOOLS_PATH}/arm-none-eabi-gcc",
-        "compilerPath": "/Volumes/external_hdd/toolchains/arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/bin/arm-none-eabi-gcc",
-        "cStandard": "c17",
-        "intelliSenseMode": "macos-gcc-arm",
-        "configurationProvider" : "ms-vscode.cmake-tools"
-    }
-    ],
-    "version": 4
+        {
+            "name": "Mac",
+
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Volumes/external_hdd/toolchains/pico/pico-sdk/**",
+                "/Volumes/external_hdd/toolchains/pico/FreeRTOS-Kernel/include"
+            ],
+            "defines": [],
+            "compilerPath": "/Volumes/external_hdd/toolchains/arm-gnu-toolchain-15.2.rel1-darwin-arm64-arm-none-eabi/bin/arm-none-eabi-gcc",
+            "cStandard": "c17",
+            "intelliSenseMode": "macos-gcc-arm"
+        }
+    ]
 }
