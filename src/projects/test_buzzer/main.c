@@ -7,6 +7,7 @@
 #include "task.h"
 
 #include "driver_gpio.h"
+#include "util_logging.h"
 #include "util_dataqueue.h"
 #include "define_rtos_tasks.h"
 #include "bsp.h"
@@ -28,7 +29,7 @@ int main(void)
     // Initialize Wifi Chip Architecture
     cyw43_arch_init();
 
-    printf("Starting Main ...\n");
+    LOG_INFO("Starting Main ...\n");
     s_print_program_information();
 
     // Initializing Software Modules
@@ -36,7 +37,7 @@ int main(void)
     // Set Buzzer pin
     DRIVER_GPIO_Setup(BSP_BUZZER_GPIO, DRIVER_GPIO_PIN_DIR_OUT);
 
-    printf("Starting Main task ...\n");
+    LOG_INFO("Starting Main task ...\n");
     
     /* Create task */
     xTaskCreate(
@@ -58,7 +59,7 @@ static void s_task_fn(void *pvParameters)
 
     while(true)
     {
-        printf("Task Running ...\n");
+        LOG_INFO("Task Running ...\n");
 
         buzzer_state = !buzzer_state;
         DRIVER_GPIO_Toggle(BSP_BUZZER_GPIO);
@@ -72,15 +73,15 @@ static void s_print_program_information(void)
 {
     // Print Program Binary Information
 
-    printf("--------------------------------------------\n");
-    printf("Name : %s\n", PICO_PROGRAM_NAME);
-    printf("Description : %s\n", PICO_PROGRAM_DESCRIPTION);
-    printf("Version : %s\n", PICO_PROGRAM_VERSION_STRING);
-    printf("Compile Date Time : %s\n", COMPILE_DATE_TIME);
-    printf("\n");
-    printf("GIT Branch : %s\n", GIT_BRANCH);
-    printf("GIT Hash : %s\n", GIT_HASH);
-    printf("GIT Tag : %s\n", GIT_TAG);
-    printf("--------------------------------------------\n");
-    printf("\n");
+    LOG_INFO("--------------------------------------------\n");
+    LOG_INFO("Name : %s\n", PICO_PROGRAM_NAME);
+    LOG_INFO("Description : %s\n", PICO_PROGRAM_DESCRIPTION);
+    LOG_INFO("Version : %s\n", PICO_PROGRAM_VERSION_STRING);
+    LOG_INFO("Compile Date Time : %s\n", COMPILE_DATE_TIME);
+    LOG_INFO("\n");
+    LOG_INFO("GIT Branch : %s\n", GIT_BRANCH);
+    LOG_INFO("GIT Hash : %s\n", GIT_HASH);
+    LOG_INFO("GIT Tag : %s\n", GIT_TAG);
+    LOG_INFO("--------------------------------------------\n");
+    LOG_INFO("\n");
 }

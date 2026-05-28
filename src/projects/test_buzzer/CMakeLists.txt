@@ -20,13 +20,10 @@ pico_sdk_init()
 add_executable(test_buzzer
     main.c
 
-    # Source -> Common -> Driver
+    # Driver
     ../../common/driver/driver_gpio/driver_gpio.c
 
-    # Source -> Common -> Util
-    ../../common/util/util_dataqueue/util_dataqueue.c
-
-    # Source -> Common -> Util
+    # Util
     ../../common/util/util_dataqueue/util_dataqueue.c
     )
 
@@ -35,6 +32,7 @@ target_include_directories(test_buzzer PUBLIC ./)
 target_include_directories(test_buzzer PUBLIC ./freertos_config)
 target_include_directories(test_buzzer PUBLIC ../../common/driver/driver_gpio/include)
 target_include_directories(test_buzzer PUBLIC ../../common/util/util_dataqueue/include)
+target_include_directories(test_buzzer PUBLIC ../../common/util/util_logging/include)
 target_include_directories(test_buzzer PUBLIC ../../common/others/bsp/include)
 target_include_directories(test_buzzer PUBLIC ../../common/others/defines/include)
 
