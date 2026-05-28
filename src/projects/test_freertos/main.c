@@ -6,9 +6,14 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "util_dataqueue.h"
+#include "define_rtos_tasks.h"
+#include "bsp.h"
+
 // Defines
 
 // Internal Variables
+TaskHandle_t handle_task_main;
 
 // Internal Functions
 static void s_task_fn(void *pvParameters);
@@ -29,12 +34,12 @@ int main(void)
     
     /* Create task */
     xTaskCreate(
-        s_task_fn,        // Task function
-        "DebugTask",      // Task name
-        256,              // Stack size
-        NULL,             // Task parameter
-        1,                // Task priority
-        NULL              // Task handle
+        s_task_fn,              // Task function
+        "DebugTask",            // Task name
+        TASK_STACK_DEPTH_MAIN,  // Stack size
+        NULL,                   // Task parameter
+        TASK_PRIORITY_MAIN,     // Task priority
+        &handle_task_main        // Task handle
     );
 
     /* Start scheduler */
@@ -54,7 +59,7 @@ static void s_task_fn(void *pvParameters)
     while(true)
     {
         printf("Task Running ...\n");
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_state);
+        cyw43_arch_gpio_put(BSP_LED_GPIO, led_state);
 
         /* Delay for 1000 ms */
         vTaskDelay(pdMS_TO_TICKS(1000));
