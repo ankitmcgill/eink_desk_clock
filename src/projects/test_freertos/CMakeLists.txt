@@ -27,8 +27,8 @@ add_executable(test_freertos
 # Add Project Folders Include Path
 target_include_directories(test_freertos PUBLIC ./)
 target_include_directories(test_freertos PUBLIC ./freertos_config)
-target_include_directories(test_freertos PUBLIC ../../common/others/bsp/include)
-target_include_directories(test_freertos PUBLIC ../../common/others/defines/include)
+target_include_directories(test_freertos PUBLIC ../../common/bsp/include)
+target_include_directories(test_freertos PUBLIC ../../common/defines/include)
 target_include_directories(test_freertos PUBLIC ../../common/util/util_dataqueue/include)
 
 # pull in common dependencies

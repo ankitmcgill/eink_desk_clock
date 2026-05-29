@@ -25,7 +25,7 @@ add_executable(test_buzzer
 
     # Util
     ../../common/util/util_dataqueue/util_dataqueue.c
-    )
+)
 
 # Add Project Folders Include Path
 target_include_directories(test_buzzer PUBLIC ./)
@@ -33,8 +33,8 @@ target_include_directories(test_buzzer PUBLIC ./freertos_config)
 target_include_directories(test_buzzer PUBLIC ../../common/driver/driver_gpio/include)
 target_include_directories(test_buzzer PUBLIC ../../common/util/util_dataqueue/include)
 target_include_directories(test_buzzer PUBLIC ../../common/util/util_logging/include)
-target_include_directories(test_buzzer PUBLIC ../../common/others/bsp/include)
-target_include_directories(test_buzzer PUBLIC ../../common/others/defines/include)
+target_include_directories(test_buzzer PUBLIC ../../common/bsp/include)
+target_include_directories(test_buzzer PUBLIC ../../common/defines/include)
 
 # pull in common dependencies
 target_link_libraries(test_buzzer pico_stdlib)
