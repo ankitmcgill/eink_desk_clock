@@ -32,7 +32,7 @@ uint8_t DRIVER_BUZZER_Init(uint8_t pin, uint32_t freq, float duty)
 
     wrap =  (1000000 / freq) - 1;
 
-    // Set Clock Divider
+    // Set Clock Divider. To Support Low Frequencies Needed For Buzzer
     // Divides Clock To 1 Mhz
     pwm_set_clkdiv(slice, 150.0f);
 
