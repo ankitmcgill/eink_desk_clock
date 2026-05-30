@@ -7,6 +7,7 @@
 #include "task.h"
 
 #include "driver_gpio.h"
+#include "driver_buzzer.h"
 #include "util_logging.h"
 #include "util_dataqueue.h"
 #include "define_rtos_tasks.h"
@@ -15,6 +16,7 @@
 // Defines
 
 // Internal Variables
+static uint8_t pwm_slice;
 TaskHandle_t handle_task_main;
 
 // Internal Functions
@@ -35,18 +37,18 @@ int main(void)
     // Initializing Software Modules
 
     // Set Buzzer pin
-    DRIVER_GPIO_Setup(BSP_BUZZER_GPIO, DRIVER_GPIO_PIN_DIR_OUT);
+    pwm_slice = DRIVER_BUZZER_Init(BSP_BUZZER_GPIO, 2000, 20.0);
 
-    LOG_INFO("Starting Main task ...");
+    LOG_INFO("Starting Main task ... slice");
     
     /* Create task */
     xTaskCreate(
         s_task_fn,              // Task function
-        "DebugTask",            // Task name
+        "MainTask",             // Task name
         TASK_STACK_DEPTH_MAIN,  // Stack size
         NULL,                   // Task parameter
         TASK_PRIORITY_MAIN,     // Task priority
-        &handle_task_main        // Task handle
+        &handle_task_main       // Task handle
     );
 
     /* Start scheduler */
@@ -55,17 +57,20 @@ int main(void)
 
 static void s_task_fn(void *pvParameters)
 {
-    static bool buzzer_state = true;
-
     while(true)
     {
-        LOG_INFO("Task Running ...");
+        LOG_INFO("Task Running ... Beep-Beep Alarm");
 
-        buzzer_state = !buzzer_state;
-        DRIVER_GPIO_Toggle(BSP_BUZZER_GPIO);
+        DRIVER_BUZZER_On(pwm_slice);
+        vTaskDelay(pdMS_TO_TICKS(100));
+        DRIVER_BUZZER_Off(pwm_slice);
+        vTaskDelay(pdMS_TO_TICKS(100));
+        DRIVER_BUZZER_On(pwm_slice);
+        vTaskDelay(pdMS_TO_TICKS(100));
+        DRIVER_BUZZER_Off(pwm_slice);
 
         /* Delay for 1000 ms */
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(2000));
     }
 }
 
@@ -83,5 +88,4 @@ static void s_print_program_information(void)
     LOG_INFO("GIT Hash : %s", GIT_HASH);
     LOG_INFO("GIT Tag : %s", GIT_TAG);
     LOG_INFO("--------------------------------------------");
-    LOG_INFO("\n");
 }

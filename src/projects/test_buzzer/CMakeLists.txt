@@ -22,6 +22,7 @@ add_executable(test_buzzer
 
     # Driver
     ../../common/driver/driver_gpio/driver_gpio.c
+    ../../common/driver/driver_buzzer/driver_buzzer.c
 
     # Util
     ../../common/util/util_dataqueue/util_dataqueue.c
@@ -31,6 +32,7 @@ add_executable(test_buzzer
 target_include_directories(test_buzzer PUBLIC ./)
 target_include_directories(test_buzzer PUBLIC ./freertos_config)
 target_include_directories(test_buzzer PUBLIC ../../common/driver/driver_gpio/include)
+target_include_directories(test_buzzer PUBLIC ../../common/driver/driver_buzzer/include)
 target_include_directories(test_buzzer PUBLIC ../../common/util/util_dataqueue/include)
 target_include_directories(test_buzzer PUBLIC ../../common/util/util_logging/include)
 target_include_directories(test_buzzer PUBLIC ../../common/bsp/include)
@@ -38,6 +40,7 @@ target_include_directories(test_buzzer PUBLIC ../../common/defines/include)
 
 # pull in common dependencies
 target_link_libraries(test_buzzer pico_stdlib)
+target_link_libraries(test_buzzer hardware_pwm)
 target_link_libraries(test_buzzer pico_cyw43_arch_none)
 target_link_libraries(test_buzzer FreeRTOS-Kernel-Heap4)
 
