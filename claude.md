@@ -27,6 +27,7 @@ project/
     - Static variable name starts with `s_`
     - Macros name starts with module name and an underscope and is in all upper case
     - Static function name starts with `s_`
+    - All comments should be in TitleCase
 
 - Memory
     - Caller frees what caller allocates
