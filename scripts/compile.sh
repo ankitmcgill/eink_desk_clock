@@ -46,7 +46,7 @@ for arg in "${@:1:$#-1}"; do
         elif [ "$arg" = "bootsel" ]; then
             picotool reboot -u
         elif [ "$arg" = "load" ]; then
-            openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "program test_debug.bin 0x10000000 verify reset exit"
+            openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "program $2.bin 0x10000000 verify reset exit"
         elif [ "$arg" = "reboot" ]; then
             openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "init; reset run; exit"
         elif [ "$arg" = "erase" ]; then
