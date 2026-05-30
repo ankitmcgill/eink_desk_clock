@@ -13,6 +13,6 @@
 #define BSP_LED_GPIO        (0)
 
 // BUZZER PINS
-#define BSP_BUZZER_GPIO     (1)
+#define BSP_BUZZER_GPIO     (22)
 
 #endif

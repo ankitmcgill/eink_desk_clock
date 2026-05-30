@@ -29,7 +29,7 @@ int main(void)
     // Initialize Wifi Chip Architecture
     cyw43_arch_init();
 
-    LOG_INFO("Starting Main ...\n");
+    LOG_INFO("Starting Main ...");
     s_print_program_information();
 
     // Initializing Software Modules
@@ -37,7 +37,7 @@ int main(void)
     // Set Buzzer pin
     DRIVER_GPIO_Setup(BSP_BUZZER_GPIO, DRIVER_GPIO_PIN_DIR_OUT);
 
-    LOG_INFO("Starting Main task ...\n");
+    LOG_INFO("Starting Main task ...");
     
     /* Create task */
     xTaskCreate(
@@ -59,7 +59,7 @@ static void s_task_fn(void *pvParameters)
 
     while(true)
     {
-        LOG_INFO("Task Running ...\n");
+        LOG_INFO("Task Running ...");
 
         buzzer_state = !buzzer_state;
         DRIVER_GPIO_Toggle(BSP_BUZZER_GPIO);
@@ -73,15 +73,15 @@ static void s_print_program_information(void)
 {
     // Print Program Binary Information
 
-    LOG_INFO("--------------------------------------------\n");
-    LOG_INFO("Name : %s\n", PICO_PROGRAM_NAME);
-    LOG_INFO("Description : %s\n", PICO_PROGRAM_DESCRIPTION);
-    LOG_INFO("Version : %s\n", PICO_PROGRAM_VERSION_STRING);
-    LOG_INFO("Compile Date Time : %s\n", COMPILE_DATE_TIME);
+    LOG_INFO("--------------------------------------------");
+    LOG_INFO("Name : %s", PICO_PROGRAM_NAME);
+    LOG_INFO("Description : %s", PICO_PROGRAM_DESCRIPTION);
+    LOG_INFO("Version : %s", PICO_PROGRAM_VERSION_STRING);
+    LOG_INFO("Compile Date Time : %s", COMPILE_DATE_TIME);
     LOG_INFO("\n");
-    LOG_INFO("GIT Branch : %s\n", GIT_BRANCH);
-    LOG_INFO("GIT Hash : %s\n", GIT_HASH);
-    LOG_INFO("GIT Tag : %s\n", GIT_TAG);
-    LOG_INFO("--------------------------------------------\n");
+    LOG_INFO("GIT Branch : %s", GIT_BRANCH);
+    LOG_INFO("GIT Hash : %s", GIT_HASH);
+    LOG_INFO("GIT Tag : %s", GIT_TAG);
+    LOG_INFO("--------------------------------------------");
     LOG_INFO("\n");
 }
