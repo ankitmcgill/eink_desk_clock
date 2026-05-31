@@ -25,8 +25,11 @@ source $SCRIPT_DIR/colors.sh
 # List Of Valid Arguments
 VALID=("cmake" "make" "info" "bootsel" "load" "reboot" "erase")
 
-# Iterate Over All Arguments Except The Last One
-for arg in "${@:1:$#-1}"; do
+# Find Name Of Elf File
+ELF_FILE=$(ls *.elf | head -1) 
+
+# Iterate Over All Arguments
+for arg in "${@:1:$#0}"; do
     found=false
     for v in "${VALID[@]}"; do
         if [ "$arg" = "$v" ]; then
@@ -37,6 +40,7 @@ for arg in "${@:1:$#-1}"; do
 
     if $found; then
         printf "${LIGHT_YELLOW}--=== "$arg" ===--${ENDCOLOR}\n"
+        printf "${LIGHT_GREEN}Found Elf File : $ELF_FILE${ENDCOLOR}\n"
         if [ "$arg" = "cmake" ]; then
             cmake ..
         elif [ "$arg" = "make" ]; then
@@ -46,11 +50,11 @@ for arg in "${@:1:$#-1}"; do
         elif [ "$arg" = "bootsel" ]; then
             picotool reboot -u
         elif [ "$arg" = "load" ]; then
-            openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "program $2.bin 0x10000000 verify reset exit"
+            openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "init; reset halt; program $ELF_FILE verify reset; reset; shutdown"
         elif [ "$arg" = "reboot" ]; then
-            openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "init; reset run; exit"
+            openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "init; reset run; shutdown"
         elif [ "$arg" = "erase" ]; then
-            openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "init; reset halt; flash erase_sector 0 0 last; reset run; exit"
+            openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "init; reset halt; flash erase_sector 0 0 last; shutdown"
         fi
 
         # Exit If Command Failed
