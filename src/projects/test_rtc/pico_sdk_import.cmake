@@ -1,0 +1,1 @@
+/Volumes/external_hdd/toolchains/pico/pico-sdk/external/pico_sdk_import.cmake
