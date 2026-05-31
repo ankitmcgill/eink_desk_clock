@@ -28,7 +28,7 @@ project/
     - Macros name starts with module name and an underscope and is in all upper case
     - Static function name starts with `s_`
     - All comments should be in TitleCase
-
+    - All constants are defined
 - Memory
     - Caller frees what caller allocates
 
@@ -40,14 +40,14 @@ project/
 - Always add a default case in switch
 - Function name always starts with name of the module, then `_` and then the function name in Camel case
 - Function always starts with a comment outlining the purpose of the function along with it's arguments and returns
-- H file has the following structure
+- H file follows the structure
     - Comment outlining the module name & date created (same as c file)
     - Header include guard (module name in all caps starting and ending with `-`)
     - Header includes
     - Defines
     - Function declerations
     - Each section should begin with a comment
-- C file follows the following structure
+- C file follows the structure
     - Comment outlining the module name & date created
     - Header includes
     - Defines

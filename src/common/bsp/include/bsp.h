@@ -4,15 +4,15 @@
 #ifndef _BSP_
 #define _BSP_
 
-// LCD DRIVER : ST7789T3
-// RESOLUTION : 240 x 320
-// COLOR FORMAT : RGB 666 18 BIT
-// INTERFACE : SPI
-
-// LED PINS
+// LED
 #define BSP_LED_GPIO        (0)
 
-// BUZZER PINS
+// BUZZER
 #define BSP_BUZZER_GPIO     (22)
+
+// RTC
+#define BSP_RTC_SDA         (10)
+#define BSP_RTC_SCL         (11)
+#define BSP_RTC_INT         (12)
 
 #endif
