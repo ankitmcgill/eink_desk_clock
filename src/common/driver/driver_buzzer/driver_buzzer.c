@@ -6,6 +6,7 @@
 #include "hardware/pwm.h"
 
 #include "driver_buzzer.h"
+#include "bsp.h"
 
 // Defines
 
@@ -20,15 +21,15 @@
 //   freq   : Output PWM Frequency
 //   duty   : Duty Percentage
 //   returns: PWM Slice Value (0 On Error)
-uint8_t DRIVER_BUZZER_Init(uint8_t pin, uint32_t freq, float duty)
+uint8_t DRIVER_BUZZER_Init(uint32_t freq, float duty)
 {
     uint32_t slice;
     uint32_t channel;
     uint32_t wrap;
 
-    gpio_set_function(pin, GPIO_FUNC_PWM);
-    slice = pwm_gpio_to_slice_num(pin);
-    channel = pwm_gpio_to_channel(pin);
+    gpio_set_function(BSP_BUZZER_GPIO, GPIO_FUNC_PWM);
+    slice = pwm_gpio_to_slice_num(BSP_BUZZER_GPIO);
+    channel = pwm_gpio_to_channel(BSP_BUZZER_GPIO);
 
     wrap =  (1000000 / freq) - 1;
 

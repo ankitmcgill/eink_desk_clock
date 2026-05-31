@@ -35,9 +35,7 @@ int main(void)
     s_print_program_information();
 
     // Initializing Software Modules
-
-    // Set Buzzer pin
-    pwm_slice = DRIVER_BUZZER_Init(BSP_BUZZER_GPIO, 2000, 20.0);
+    pwm_slice = DRIVER_BUZZER_Init(2000, 20.0); // Buzzer
 
     LOG_INFO("Starting Main task ... slice");
     
