@@ -20,14 +20,22 @@ pico_sdk_init()
 add_executable(test_rtc
     main.c
 
+    # Module
+    ../../common/module/module_rtc/module_rtc.c
+
     # Driver
     ../../common/driver/driver_rtc/driver_rtc.c
+
+    # Util
+    ../../common/util/util_dataqueue/util_dataqueue.c
 )
 
 # Add Project Folders Include Path
 target_include_directories(test_rtc PUBLIC ./)
 target_include_directories(test_rtc PUBLIC ./freertos_config)
+target_include_directories(test_rtc PUBLIC ../../common/module/module_rtc/include)
 target_include_directories(test_rtc PUBLIC ../../common/driver/driver_rtc/include)
+target_include_directories(test_rtc PUBLIC ../../common/util/util_dataqueue/include)
 target_include_directories(test_rtc PUBLIC ../../common/util/util_logging/include)
 target_include_directories(test_rtc PUBLIC ../../common/bsp/include)
 target_include_directories(test_rtc PUBLIC ../../common/defines/include)
@@ -83,3 +91,14 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 add_definitions(-DCOMPILE_DATE_TIME="${COMPILE_DATE_TIME}" -DGIT_BRANCH="${GIT_BRANCH}" -DGIT_HASH="${GIT_HASH}" -DGIT_TAG="${GIT_TAG}")
+
+# Custom Command To Print Flash & Ram Usage
+add_custom_command(
+    TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND
+        bash ${CMAKE_CURRENT_SOURCE_DIR}/../../../scripts/compile.sh size
+    COMMENT
+        "Calculating target memory usage..."
+    VERBATIM
+)

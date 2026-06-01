@@ -13,6 +13,7 @@ if [ "$#" -eq 0 ]; then
     echo "  load - Flash Binary To Pico"
     echo "  reboot - Reboot Pico & Run Binary"
     echo "  erase - Erase Pico Flash"
+    echo "  size - Compile Bin Size / Usage Report"
     exit 1
 fi
 
@@ -23,7 +24,7 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 source $SCRIPT_DIR/colors.sh
 
 # List Of Valid Arguments
-VALID=("cmake" "make" "info" "bootsel" "load" "reboot" "erase")
+VALID=("cmake" "make" "info" "bootsel" "load" "reboot" "erase" "size")
 
 # Find Name Of Elf File
 ELF_FILE=$(ls *.elf | head -1) 
@@ -55,6 +56,15 @@ for arg in "${@:1:$#0}"; do
             openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "init; reset run; shutdown"
         elif [ "$arg" = "erase" ]; then
             openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "init; reset halt; flash erase_sector 0 0 last; shutdown"
+        elif [ "$arg" = "size" ]; then
+            arm-none-eabi-size $ELF_FILE
+            arm-none-eabi-size $ELF_FILE | awk -v fs=2097152 -v rs=532480 '
+                NR == 2 {
+                    flash = $1 + $2
+                    ram   = $3 + $2
+                    printf "Flash: %d / %d bytes (%.1f%%)\n", flash, fs, flash / fs * 100
+                    printf "RAM:   %d / %d bytes (%.1f%%)\n", ram, rs, ram / rs * 100
+                }'
         fi
 
         # Exit If Command Failed
