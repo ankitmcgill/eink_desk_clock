@@ -58,7 +58,7 @@ for arg in "${@:1:$#0}"; do
             openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 4000" -c "init; reset halt; flash erase_sector 0 0 last; shutdown"
         elif [ "$arg" = "size" ]; then
             arm-none-eabi-size $ELF_FILE
-            arm-none-eabi-size $ELF_FILE | awk -v fs=2097152 -v rs=532480 '
+            arm-none-eabi-size $ELF_FILE | awk -v fs=4194304 -v rs=532480 '
                 NR == 2 {
                     flash = $1 + $2
                     ram   = $3 + $2
