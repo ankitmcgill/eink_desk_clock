@@ -8,7 +8,6 @@
 #include "hardware/i2c.h"
 
 #include "driver_rtc.h"
-#include "util_logging.h"
 #include "bsp.h"
 
 // Defines
@@ -20,10 +19,24 @@
 #define DRIVER_RTC_REGISTER_DATE    (0x04)
 #define DRIVER_RTC_REGISTER_MONTH   (0x05)
 #define DRIVER_RTC_REGISTER_YEAR    (0x06)  //0-99, Offset From 2000
+#define DRIVER_RTC_REGISTER_ALARM1_SEC  (0x07)
+#define DRIVER_RTC_REGISTER_ALARM1_MIN  (0x08)
+#define DRIVER_RTC_REGISTER_ALARM1_HOUR (0x09)
+#define DRIVER_RTC_REGISTER_ALARM1_DAY  (0x0A)
+#define DRIVER_RTC_REGISTER_ALARM2_MIN  (0x0B)
+#define DRIVER_RTC_REGISTER_ALARM2_HOUR (0x0C)
+#define DRIVER_RTC_REGISTER_ALARM2_DAY  (0x0D)
 #define DRIVER_RTC_REGISTER_CONTROL (0x0E)
+#define DRIVER_RTC_REGISTER_STATUS  (0x0F)
 #define DRIVER_RTC_MASK_SECOND      (0x7F)
 #define DRIVER_RTC_MASK_HOUR        (0x3F)
 #define DRIVER_RTC_MASK_MONTH       (0x1F)
+#define DRIVER_RTC_MASK_ALARM       (0x80)  // Alarm Mask Bit (AxMx)
+#define DRIVER_RTC_CONTROL_INTCN    (0x04)  // Interrupt Control (Alarm On INT)
+#define DRIVER_RTC_CONTROL_A2IE     (0x02)  // Alarm2 Interrupt Enable
+#define DRIVER_RTC_CONTROL_A1IE     (0x01)  // Alarm1 Interrupt Enable
+#define DRIVER_RTC_STATUS_A2F       (0x02)  // Alarm2 Flag
+#define DRIVER_RTC_STATUS_A1F       (0x01)  // Alarm1 Flag
 
 // Local Variables
 static driver_rtc_tick_cb_t s_tick_cb = NULL;
@@ -41,7 +54,7 @@ static void s_irq_cb(uint gpio, uint32_t events);
 //   returns: True On Success, False Otherwise
 bool DRIVER_RTC_Init(void)
 {
-    uint8_t buf[2];
+    uint8_t buf[5];
 
     // Initialize I2C
     i2c_init(i2c1, 100000);
@@ -50,8 +63,28 @@ bool DRIVER_RTC_Init(void)
     gpio_pull_up(BSP_RTC_SDA);
     gpio_pull_up(BSP_RTC_SCL);
 
-    // Setup 1 Second Output On RTC
+    // Configure Alarm1 For Once Per Second (A1M1..A1M4 All Set)
+    buf[0] = DRIVER_RTC_REGISTER_ALARM1_SEC;
+    buf[1] = DRIVER_RTC_MASK_ALARM;
+    buf[2] = DRIVER_RTC_MASK_ALARM;
+    buf[3] = DRIVER_RTC_MASK_ALARM;
+    buf[4] = DRIVER_RTC_MASK_ALARM;
+    i2c_write_blocking(i2c1, DRIVER_RTC_I2C_ADDRESS, buf, 5, false);
+
+    // Configure Alarm2 For Once Per Minute (A2M2..A2M4 All Set)
+    buf[0] = DRIVER_RTC_REGISTER_ALARM2_MIN;
+    buf[1] = DRIVER_RTC_MASK_ALARM;
+    buf[2] = DRIVER_RTC_MASK_ALARM;
+    buf[3] = DRIVER_RTC_MASK_ALARM;
+    i2c_write_blocking(i2c1, DRIVER_RTC_I2C_ADDRESS, buf, 4, false);
+
+    // Enable Alarm Interrupts On INT/SQW (INTCN | A2IE | A1IE)
     buf[0] = DRIVER_RTC_REGISTER_CONTROL;
+    buf[1] = DRIVER_RTC_CONTROL_INTCN | DRIVER_RTC_CONTROL_A2IE | DRIVER_RTC_CONTROL_A1IE;
+    i2c_write_blocking(i2c1, DRIVER_RTC_I2C_ADDRESS, buf, 2, false);
+
+    // Clear Any Pending Alarm Flags
+    buf[0] = DRIVER_RTC_REGISTER_STATUS;
     buf[1] = 0x00;
     i2c_write_blocking(i2c1, DRIVER_RTC_I2C_ADDRESS, buf, 2, false);
 
@@ -109,6 +142,38 @@ bool DRIVER_RTC_SetTickCallback(driver_rtc_tick_cb_t cb)
     return true;
 }
 
+// DRIVER_RTC_GetAlarmFlags: Read Which Alarms Fired And Clear Their Flags.
+//   flags  : Destination For The Fired Alarm Mask (DRIVER_RTC_ALARM_SEC/MIN)
+//   returns: True On Success, False Otherwise
+bool DRIVER_RTC_GetAlarmFlags(uint8_t* flags)
+{
+    uint8_t reg = DRIVER_RTC_REGISTER_STATUS;
+    uint8_t status;
+    uint8_t buf[2];
+
+    // Read The Status Register
+    i2c_write_blocking(i2c1, DRIVER_RTC_I2C_ADDRESS, &reg, 1, true);
+    i2c_read_blocking(i2c1, DRIVER_RTC_I2C_ADDRESS, &status, 1, false);
+
+    // Map Status Flags To The Public Alarm Mask
+    *flags = 0;
+    if (status & DRIVER_RTC_STATUS_A1F)
+    {
+        *flags |= DRIVER_RTC_ALARM_SEC;
+    }
+    if (status & DRIVER_RTC_STATUS_A2F)
+    {
+        *flags |= DRIVER_RTC_ALARM_MIN;
+    }
+
+    // Clear The Alarm Flags (Re-Arms The INT/SQW Pin)
+    buf[0] = DRIVER_RTC_REGISTER_STATUS;
+    buf[1] = status & ~(DRIVER_RTC_STATUS_A1F | DRIVER_RTC_STATUS_A2F);
+    i2c_write_blocking(i2c1, DRIVER_RTC_I2C_ADDRESS, buf, 2, false);
+
+    return true;
+}
+
 // s_bcd: Convert A Binary Value To BCD.
 //   v      : Binary Value (0-99)
 //   returns: BCD Value
@@ -157,14 +222,12 @@ static void s_tm_to_rtc(uint8_t* d, struct tm* ptr)
     d[6] = s_bcd(ptr->tm_year - 100);
 }
 
-// s_irq_cb: GPIO Interrupt Callback For The RTC 1 Second Output.
+// s_irq_cb: GPIO Interrupt Callback For The RTC Alarm (INT/SQW) Output.
 //   gpio   : GPIO Pin That Triggered The Interrupt
 //   events : Bitmask Of The Triggering Edge/Level Events
 //   returns: None
 static void s_irq_cb(uint gpio, uint32_t events)
 {
-    LOG_DEBUG("1 sec tick...");
-
     if (s_tick_cb != NULL)
     {
         s_tick_cb();
